@@ -30,14 +30,23 @@ Sj (total number of specimens counted on site j) = 10 + 6 = 16.
 So our BCij = 1 – (2 * 10) / (17 + 16), or 0.39.
 */
 
-let data = papa.parse("./sample_data.csv", {
-    complete: (results) => {
-        console.log("test");
-        console.log(results);
-        // handleData(results);
+var data;
+
+papa.parse('./sample_data.csv', {
+    header: true,
+    download: true,
+    dynamicTyping: true,
+    complete: function (results) {
+        processFileData(results.data);
     }
 });
 
+const processFileData = (data) => {
+    // console.log(data);
+    data.map(datum => {
+        console.log(datum);
+    });
+}
 // const handleData = (results) => {
 //     console.log();
 // }
