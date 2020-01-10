@@ -53,10 +53,10 @@ const createOrdinationPlot = (data) => {
  */
 const createSiteDict = (data) => {
     console.log(data);
-    
-    data.map(site => {
-        console.log(site);
 
+    let brayCurtMatrix = {};
+    data.map(site => {
+        // console.log(site);
         let siteTotalOtus = 0
         for (let item in site) {
             let value = site[item];
@@ -64,6 +64,20 @@ const createSiteDict = (data) => {
                 siteTotalOtus += value;
             }
         }
-        console.log(siteTotalOtus);
+        // console.log(siteTotalOtus);
+
+        // have the site's total at this point. 
+        // now iterate over differing sites to compare. Skip
+        // own site.
+
+        data.map(site2 => {
+            if (site2 != site) {
+                console.log(site2, site);
+                countComparisons.push([site2, site]);
+            }
+        });
+        console.log(countComparisons);
     })
+
+
 }
