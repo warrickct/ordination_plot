@@ -1,4 +1,5 @@
-organism,site1, site2, site3
-mushroom, 1, 5, 2
-shrimp, 2, 8, 12
-cow, 5, 5, 10
+ ,mushroom,shrimp,cow,chicken
+site1,1,5,0,2
+site2,3,8,3,4
+site3,7,4,9,3
+site4,10,3,5,7

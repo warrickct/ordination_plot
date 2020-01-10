@@ -8,6 +8,7 @@ https://www.statisticshowto.datasciencecentral.com/bray-curtis-dissimilarity/
 // const papa = require('papaparse');
 import * as papa from 'papaparse';
 import * as d3 from 'd3';
+import { map } from 'd3';
 
 // define the position of communities in multidim space
 // reduce the dimensions, usually by 2
@@ -37,16 +38,32 @@ papa.parse('./sample_data.csv', {
     download: true,
     dynamicTyping: true,
     complete: function (results) {
-        processFileData(results.data);
+        createOrdinationPlot(results.data);
     }
 });
 
-const processFileData = (data) => {
+const createOrdinationPlot = (data) => {
     // console.log(data);
-    data.map(datum => {
-        console.log(datum);
-    });
+    let siteDictionary = createSiteDict(data);
 }
-// const handleData = (results) => {
-//     console.log();
-// }
+
+/**
+ * Create site keys with organism measurements as values
+ * @param {*} data 
+ */
+const createSiteDict = (data) => {
+    console.log(data);
+    
+    data.map(site => {
+        console.log(site);
+
+        let siteTotalOtus = 0
+        for (let item in site) {
+            let value = site[item];
+            if (!isNaN(value)) {
+                siteTotalOtus += value;
+            }
+        }
+        console.log(siteTotalOtus);
+    })
+}
