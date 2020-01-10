@@ -73,13 +73,22 @@ const createSiteDict = (data) => {
         data.map(site2 => {
             if (site2 != site) {
                 console.log(site2, site);
-                countComparisons.push([site2, site]);
-
                 // iterate each otu in both sites
                 // 1 - (total off lesser counts of common otus * n-sites)/(total count of species in all sites)
+                let sumLesser = 0;
+                Object.keys(site).map(key => {
+                    if (key !== "site") {
+                        console.log(key);
+                        // console.log(site[key]);
+                        let lesser = Math.min(site[key], site2[key]);
+                        console.log('lesser: ' + lesser);
+                        sumLesser += Math.min(site[key], site2[key]);
+                    }
+                });
+                console.log(sumLesser);
+                
             }
         });
-        console.log(countComparisons);
     })
 
 
