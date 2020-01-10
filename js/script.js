@@ -74,6 +74,9 @@ const createSiteDict = (data) => {
             if (site2 != site) {
                 console.log(site2, site);
                 countComparisons.push([site2, site]);
+
+                // iterate each otu in both sites
+                // 1 - (total off lesser counts of common otus * n-sites)/(total count of species in all sites)
             }
         });
         console.log(countComparisons);
