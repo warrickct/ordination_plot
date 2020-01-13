@@ -44,16 +44,15 @@ papa.parse('./sample_data.csv', {
 
 const createOrdinationPlot = (data) => {
     // console.log(data);
-    let siteDictionary = createSiteDict(data);
+    let siteDictionary = createBrayCurtisMatrix(data);
 }
 
 /**
  * Create site keys with organism measurements as values
  * @param {*} data 
  */
-const createSiteDict = (data) => {
+const createBrayCurtisMatrix = (data) => {
     console.log(data);
-
     let brayCurtMatrix = {};
     data.map(site => {
         // console.log(site);
@@ -64,32 +63,38 @@ const createSiteDict = (data) => {
                 siteTotalOtus += value;
             }
         }
-        // console.log(siteTotalOtus);
-
-        // have the site's total at this point. 
-        // now iterate over differing sites to compare. Skip
-        // own site.
-
         data.map(site2 => {
+            // skip own site
             if (site2 != site) {
-                console.log(site2, site);
-                // iterate each otu in both sites
-                // 1 - (total off lesser counts of common otus * n-sites)/(total count of species in all sites)
-                let sumLesser = 0;
-                Object.keys(site).map(key => {
-                    if (key !== "site") {
-                        console.log(key);
-                        // console.log(site[key]);
-                        let lesser = Math.min(site[key], site2[key]);
-                        console.log('lesser: ' + lesser);
-                        sumLesser += Math.min(site[key], site2[key]);
-                    }
-                });
-                console.log(sumLesser);
-                
+                let siteKey = site2['site'] + site['site'];
+                console.log(siteKey);
+                console.log(calculateBrayCurtis(site2, site));
+                brayCurtMatrix[siteKey] = calculateBrayCurtis(site2, site);
             }
         });
     })
+    console.log(brayCurtMatrix);
+}
 
-
+const calculateBrayCurtis = (site2, site) => {
+    console.log(site2, site);
+    // iterate each otu in both sites
+    // 1 - (total off lesser counts of common otus * n-sites)/(total count of species in all sites)
+    let sumLesser = 0;
+    let totalSpecimenCount = 0;
+    Object.keys(site).map(key => {
+        if (key !== "site") {
+            // console.log(key);
+            // console.log(site[key]);
+            let lesser = Math.min(site[key], site2[key]);
+            // console.log('lesser: ' + lesser);
+            sumLesser += Math.min(site[key], site2[key]);
+            totalSpecimenCount += site[key] + site2[key];
+        }
+    });
+    // console.log('sum of lessers: ' + sumLesser);
+    // console.log('total spec count: ' + totalSpecimenCount);
+    // assuming site count will be two. Possibly expand this to be multiple sites in the future?
+    let brayCurt = 1 - (sumLesser * 2) / (totalSpecimenCount);
+    return brayCurt;
 }
