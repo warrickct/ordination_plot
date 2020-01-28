@@ -8,7 +8,7 @@ https://www.statisticshowto.datasciencecentral.com/bray-curtis-dissimilarity/
 // const papa = require('papaparse');
 import * as papa from 'papaparse';
 import * as d3 from 'd3';
-import { map } from 'd3';
+import { map, create } from 'd3';
 
 // define the position of communities in multidim space
 // reduce the dimensions, usually by 2
@@ -42,10 +42,51 @@ papa.parse('./sample_data.csv', {
     }
 });
 
-const createOrdinationPlot = (data) => {
+const createOrdinationPlot = (siteData) => {
     // console.log(data);
-    let siteDictionary = createBrayCurtisMatrix(data);
+    let siteMatrixData = createBrayCurtisMatrix(siteData);
+
+    initSiteCoords(siteData);
+
+    createEuclideanLookupMatrix(siteData);
 }
+
+/**
+ * Computes all euclidean values for each pair in order to do procrustes analysis
+ * @param {*} siteData 
+ */
+const createEuclideanLookupMatrix = (siteData) => {
+    let euclideanLookup = {};
+    siteData.map(site => {
+        siteData.map(site2 => {
+            if (site2 == site) {
+                return false;
+            }
+            // console.log(site, site2);
+            let siteKey = createSiteKey(site, site2);
+            console.log(siteKey);
+            let euclidean = euclideanDist(site, site2);
+        });
+    });
+};
+
+const euclideanDist = (a, b) => {
+    return Math.sqrt(square(a.x - b.x) + square(a.y - b.y));
+}
+
+const square = (val) => {
+    return val * val;
+}
+
+const initSiteCoords = (siteData) => {
+    siteData.map(site => {
+        site['x'] = Math.random();
+        site['y'] = Math.random();
+    });
+    console.log(siteData);
+}
+
+
 
 /**
  * Create site keys with organism measurements as values
@@ -53,31 +94,38 @@ const createOrdinationPlot = (data) => {
  */
 const createBrayCurtisMatrix = (data) => {
     console.log(data);
-    let brayCurtMatrix = {};
+    let brayCurtisFlatMatrix = {};
+    let brayCurtMatrix = [];
     data.map(site => {
-        // console.log(site);
-        let siteTotalOtus = 0
-        for (let item in site) {
-            let value = site[item];
-            if (!isNaN(value)) {
-                siteTotalOtus += value;
-            }
-        }
+        // calculating bray curtis for sites
+        let dArray = [];
         data.map(site2 => {
             // skip own site
-            if (site2 != site) {
-                let siteKey = site2['site'] + site['site'];
-                console.log(siteKey);
-                console.log(calculateBrayCurtis(site2, site));
-                brayCurtMatrix[siteKey] = calculateBrayCurtis(site2, site);
+            if (site2 == site) {
+                return false;
             }
+            let siteKey = createSiteKey(site, site2);
+            // console.log(siteKey);
+            // console.log(calculateBrayCurtis(site2, site));
+            brayCurtisFlatMatrix[siteKey] = {
+                'brayCurt': calculateBrayCurtis(site2, site),
+                'ordinationCoords': [Math.random(), Math.random()]
+            };
+            dArray.push(calculateBrayCurtis(site2, site));
         });
-    })
-    console.log(brayCurtMatrix);
+        brayCurtMatrix.push(dArray);
+    });
+    // console.log(brayCurtisFlatMatrix);
+    // console.log(brayCurtMatrix);
+    return brayCurtisFlatMatrix
+}
+
+const createSiteKey = (a, b) => {
+    return a['site'] + b['site'];
 }
 
 const calculateBrayCurtis = (site2, site) => {
-    console.log(site2, site);
+    // console.log(site2, site);
     // iterate each otu in both sites
     // 1 - (total off lesser counts of common otus * n-sites)/(total count of species in all sites)
     let sumLesser = 0;
@@ -98,3 +146,5 @@ const calculateBrayCurtis = (site2, site) => {
     let brayCurt = 1 - (sumLesser * 2) / (totalSpecimenCount);
     return brayCurt;
 }
+
+
