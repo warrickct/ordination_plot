@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "d3": "^5.14.2",
+    "d3": "^7.6.1",
     "papaparse": "^5.1.0"
   },
   "devDependencies": {
